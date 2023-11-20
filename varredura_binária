@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Função para comparar o valor dado pelo usuário com o número escolhido
+void compararValores(int valorUsuario, int numeroAdivinhado) {
+    if (valorUsuario < numeroAdivinhado) {
+        printf("Muito baixo. Tente novamente!\n");
+    } else if (valorUsuario > numeroAdivinhado) {
+        printf("Muito alto. Tente novamente!\n");
+    } else {
+        printf("Parabéns! Você acertou!\n");
+    }
+}
+
+// Função para que o computador jogue e tente adivinhar o número
+int computadorJogar(int inicio, int fim, int numeroAdivinhado) {
+    int tentativa;
+    int tentativas = 0;
+
+    do {
+        // Calcula a tentativa como a média do intervalo atual
+        tentativa = (inicio + fim) / 2;
+
+        // Incrementa o número de tentativas
+        tentativas++;
+
+        // Imprime a tentativa atual e verifica se acertou
+        printf("Tentativa %d: O número escolhido é %d? (1 - Sim, 0 - Não): ", tentativas, tentativa);
+        int resposta;
+        if (scanf("%d", &resposta) != 1) {
+            // Tratar erro de leitura, se necessário
+            printf("Entrada inválida. Tente novamente.\n");
+            while (getchar() != '\n');
+            continue;  // Reinicia o loop
+        }
+
+        // Limpa o buffer de entrada
+        while (getchar() != '\n');
+
+        if (resposta) {
+            // Retorna a tentativa se acertou
+            return tentativa;
+        } else {
+            // Atualiza o intervalo para continuar a busca binária
+            if (tentativa < numeroAdivinhado) {
+                inicio = tentativa + 1;
+            } else {
+                fim = tentativa - 1;
+            }
+        }
+    } while (inicio <= fim);
+
+    // Caso algo inesperado aconteça, retorne -1
+    return -1;
+}
+
+int main() {
+    // Criar números aleatórios
+    srand(time(NULL));
+    int numeroAdivinhado = rand() % 100 + 1;
+
+    // Valor fornecido pelo usuário
+    int valorUsuario;
+
+    int tentativas = 0;
+
+    // Loop para dar várias chances ao usuário
+    while (1) {
+        tentativas++; // Incrementa o número de tentativas
+
+        // Solicita ao usuário que escolha um número
+        printf("Escolha um número (entre 1 e 100): ");
+
+        // Verifica o retorno da scanf para garantir que a leitura foi bem-sucedida
+        if (scanf("%d", &valorUsuario) != 1) {
+            // Tratar erro de leitura, se necessário
+            printf("Entrada inválida. Tente novamente.\n");
+            // Limpa o buffer de entrada
+            while (getchar() != '\n');
+            continue;  // Reinicia o loop
+        }
+
+        // Chama a função para comparar os valores
+        compararValores(valorUsuario, numeroAdivinhado);
+
+        // Se o usuário acertou, saia do loop
+        if (valorUsuario == numeroAdivinhado) {
+            break;
+        }
+    }
+
+    // Mensagem final
+    printf("Você acertou em %d tentativa(s)!\n", tentativas);
+
+    // O computador joga
+    int valorComputador = computadorJogar(1, 100, numeroAdivinhado);
+
+    // Mensagem final para o computador
+    printf("O computador acertou em %d tentativa(s)! O número escolhido foi: %d\n", tentativas, valorComputador);
+
+    return 0;
+}
